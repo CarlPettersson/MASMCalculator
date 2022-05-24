@@ -52,41 +52,10 @@
 			mul ebx
 			add eax, tempnum
 			mov tempnum2, eax
-		.ELSEIF eax == '*'
-			;mov whatSign, '*'
+		.ELSEIF eax == '*' || eax == '+' || eax == '-' || eax == '/' || eax == '^'
 			push eax
 			mov eax, tempnum2
 			jmp GoHere
-			;mov num1, eax
-			;mov tempnum2, 0
-		.ELSEIF eax == '+'
-			;mov whatSign, '+'
-			push eax
-			mov eax, tempnum2
-			jmp GoHere
-			;mov num1, eax
-			;mov tempnum2, 0
-		.ELSEIF eax == '/'
-			;mov whatSign, '/'
-			push eax
-			mov eax, tempnum2
-			jmp GoHere
-			;mov num1, eax
-			;mov tempnum2, 0
-		.ELSEIF eax == '-'
-			;mov whatSign, '-'
-			push eax
-			mov eax, tempnum2
-			jmp GoHere
-			;mov num1, eax
-			;mov tempnum2, 0
-		.ELSEIF eax == '^'
-			;mov whatSign, '^'
-			push eax
-			mov eax, tempnum2
-			jmp GoHere
-			;mov num1, eax
-			;mov tempnum2, 0
 		.ENDIF
 		GoBack:
 		add esi, 1
@@ -105,8 +74,10 @@ GoHere:
 		.ELSE
 		mov eax, num2
 		.ENDIF
+
 	.ELSEIF whatSign == '+'
 		add eax, num2
+
 	.ELSEIF whatSign == '/'
 		.IF num2 == 0
 			mov edx, offset divBy0
@@ -144,35 +115,34 @@ GoHere:
 			mov eax, num2
 			.ENDIF
 		.ENDIF
+
 	.ELSEIF whatsign == '-'
 		.IF first != 1
 		sub eax, num2
 		.ELSE
 		mov eax, num2
 		.ENDIF
+
 	.ELSEIF whatSign == '^'
-		.IF num2 == 0
-			
-		.IF first != 1
-			mov eax, 1
-		.ELSE
-			mov eax, tempnum2
-		.ENDIF
-		.ELSEIF num2 == 1
-		.IF first != 1
+		.IF first == 1
 			mov eax, num2
 		.ELSE
-			mov eax, tempnum2
-			
-		.ENDIF
-
-		.ELSE
-			mov ecx, num2
-			sub ecx, 1
-			mov esi, eax
-			L2:
-				mul esi
-			Loop L2
+			.IF num2 == 0
+				mov eax, 1
+			.ELSEIF num2 == 1
+				;mov eax, result
+			.ELSE
+				push ecx
+				push esi
+				mov ecx, num2
+				sub ecx, 1
+				mov esi, eax
+				L2:
+					mul esi
+				Loop L2
+				pop esi
+				pop ecx
+			.ENDIF
 		.ENDIF
 	.ENDIF
 	.IF first == 1
@@ -217,10 +187,3 @@ quit:
   INVOKE ExitProcess, eax
  main ENDP
 END main
-
-;what can it do
-; 
-;	division with no remainder if there is remainder then it will only do first operation
-;	multiplikation
-;	addition
-;	subtraktion
