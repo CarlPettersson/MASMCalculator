@@ -15,11 +15,10 @@
 
 	first BYTE ?
 
-	num1 DWORD ?
-	num2 DWORD 0
+	num DWORD 0
 	result DWORD 0
 	tempnum DWORD 0
-	tempnum2 DWORD 0
+
 	whatSign DWORD 0
 
  .code
@@ -30,7 +29,7 @@
 	;call clrscr
 	xor esi, esi
 	mov eax, 0
-	mov tempnum2, eax
+	mov num, eax
 	mov result, 0
 	mov first, 1
 	
@@ -48,13 +47,12 @@
 		.IF eax > 47 && eax < 58
 			sub eax, 48	
 			mov tempnum, eax
-			mov eax, tempnum2
+			mov eax, num
 			mul ebx
 			add eax, tempnum
-			mov tempnum2, eax
+			mov num, eax
 		.ELSEIF eax == '*' || eax == '+' || eax == '-' || eax == '/' || eax == '^'
 			push eax
-			mov eax, tempnum2
 			jmp GoHere
 		.ENDIF
 		GoBack:
@@ -64,28 +62,26 @@
 	jle L1
 
 GoHere:
-	mov eax, tempnum2
-	mov num2, eax
 	mov eax, result
 
 	.IF whatSign == '*'
 		.IF first != 1
-		mul num2
+		mul num
 		.ELSE
-		mov eax, num2
+		mov eax, num
 		.ENDIF
 
 	.ELSEIF whatSign == '+'
-		add eax, num2
+		add eax, num
 
 	.ELSEIF whatSign == '/'
-		.IF num2 == 0
+		.IF num == 0
 			mov edx, offset divBy0
 			call writestring
 			jmp start
 		.ELSE
 			.IF first != 1
-			div num2
+			div num
 			.IF edx != 0
 				test eax, eax
 				jl neg2
@@ -95,7 +91,7 @@ GoHere:
 				call writeint
 				pos2:
 
-				mov ebx, num2
+				mov ebx, num
 				mov al, '.'
 				call writechar
 
@@ -112,29 +108,29 @@ GoHere:
 				jmp start
 			.ENDIF
 			.ELSE
-			mov eax, num2
+			mov eax, num
 			.ENDIF
 		.ENDIF
 
 	.ELSEIF whatsign == '-'
 		.IF first != 1
-		sub eax, num2
+		sub eax, num
 		.ELSE
-		mov eax, num2
+		mov eax, num
 		.ENDIF
 
 	.ELSEIF whatSign == '^'
 		.IF first == 1
-			mov eax, num2
+			mov eax, num
 		.ELSE
-			.IF num2 == 0
+			.IF num == 0
 				mov eax, 1
-			.ELSEIF num2 == 1
+			.ELSEIF num == 1
 				;mov eax, result
 			.ELSE
 				push ecx
 				push esi
-				mov ecx, num2
+				mov ecx, num
 				sub ecx, 1
 				mov esi, eax
 				L2:
@@ -146,12 +142,12 @@ GoHere:
 		.ENDIF
 	.ENDIF
 	.IF first == 1
-	mov eax, num2
+	mov eax, num
 	mov result, eax
 	.ELSE
 	mov result, eax
 	.ENDIF
-	mov tempnum2, 0
+	mov num, 0
 	mov first, 0
 
 	pop eax
