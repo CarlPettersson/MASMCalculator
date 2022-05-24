@@ -11,10 +11,13 @@
 	stringSize DWORD ?
 
 	newline BYTE 13, 10, 0
-	divBy0 BYTE "inf", 13, 10, 0
+	divBy0 BYTE "NaN", 13, 10, 0
+
+	first BYTE ?
 
 	num1 DWORD ?
 	num2 DWORD 0
+	result DWORD 0
 	tempnum DWORD 0
 	tempnum2 DWORD 0
 	whatSign DWORD 0
@@ -23,11 +26,13 @@
  main PROC
 
  start:
-
+	
 	;call clrscr
 	xor esi, esi
 	mov eax, 0
 	mov tempnum2, eax
+	mov result, 0
+	mov first, 1
 	
 	mov edx, offset stringIn
 	mov ecx, MAX
@@ -48,40 +53,58 @@
 			add eax, tempnum
 			mov tempnum2, eax
 		.ELSEIF eax == '*'
-			mov whatSign, '*'
+			;mov whatSign, '*'
+			push eax
 			mov eax, tempnum2
-			mov num1, eax
-			mov tempnum2, 0
+			jmp GoHere
+			;mov num1, eax
+			;mov tempnum2, 0
 		.ELSEIF eax == '+'
-			mov whatSign, '+'
+			;mov whatSign, '+'
+			push eax
 			mov eax, tempnum2
-			mov num1, eax
-			mov tempnum2, 0
+			jmp GoHere
+			;mov num1, eax
+			;mov tempnum2, 0
 		.ELSEIF eax == '/'
-			mov whatSign, '/'
+			;mov whatSign, '/'
+			push eax
 			mov eax, tempnum2
-			mov num1, eax
-			mov tempnum2, 0
+			jmp GoHere
+			;mov num1, eax
+			;mov tempnum2, 0
 		.ELSEIF eax == '-'
-			mov whatSign, '-'
+			;mov whatSign, '-'
+			push eax
 			mov eax, tempnum2
-			mov num1, eax
-			mov tempnum2, 0
+			jmp GoHere
+			;mov num1, eax
+			;mov tempnum2, 0
 		.ELSEIF eax == '^'
-			mov whatSign, '^'
+			;mov whatSign, '^'
+			push eax
 			mov eax, tempnum2
-			mov num1, eax
-			mov tempnum2, 0
+			jmp GoHere
+			;mov num1, eax
+			;mov tempnum2, 0
 		.ENDIF
+		GoBack:
 		add esi, 1
 		add ecx, 1
 	cmp ecx, stringSize
 	jle L1
+
+GoHere:
 	mov eax, tempnum2
 	mov num2, eax
-	mov eax, num1
+	mov eax, result
+
 	.IF whatSign == '*'
+		.IF first != 1
 		mul num2
+		.ELSE
+		mov eax, num2
+		.ENDIF
 	.ELSEIF whatSign == '+'
 		add eax, num2
 	.ELSEIF whatSign == '/'
@@ -90,6 +113,7 @@
 			call writestring
 			jmp start
 		.ELSE
+			.IF first != 1
 			div num2
 			.IF edx != 0
 				test eax, eax
@@ -111,17 +135,37 @@
 				div ebx
 				call writeDec
 				Loop L3
+				mov edx, offset newline
+				call writestring
 
 				jmp start
 			.ENDIF
+			.ELSE
+			mov eax, num2
+			.ENDIF
 		.ENDIF
 	.ELSEIF whatsign == '-'
+		.IF first != 1
 		sub eax, num2
+		.ELSE
+		mov eax, num2
+		.ENDIF
 	.ELSEIF whatSign == '^'
 		.IF num2 == 0
+			
+		.IF first != 1
 			mov eax, 1
+		.ELSE
+			mov eax, tempnum2
+		.ENDIF
 		.ELSEIF num2 == 1
-			mov eax, num1
+		.IF first != 1
+			mov eax, num2
+		.ELSE
+			mov eax, tempnum2
+			
+		.ENDIF
+
 		.ELSE
 			mov ecx, num2
 			sub ecx, 1
@@ -131,6 +175,32 @@
 			Loop L2
 		.ENDIF
 	.ENDIF
+	.IF first == 1
+	mov eax, num2
+	mov result, eax
+	.ELSE
+	mov result, eax
+	.ENDIF
+	mov tempnum2, 0
+	mov first, 0
+
+	pop eax
+	.IF eax == '*'
+		mov whatSign, '*'
+	.ELSEIF eax == '-'
+		mov whatSign, '-'
+	.ELSEIF eax == '+'
+		mov whatSign, '+'
+	.ELSEIF eax == '/'
+		mov whatsign, '/'
+	.ELSEIF eax == '^'
+		mov whatSign, '^'
+	.ENDIF
+	mov eax, result
+
+	cmp ecx, stringSize
+	jle GoBack
+
 	test eax, eax
 	jl neg1
 	call writeDec
@@ -147,3 +217,10 @@ quit:
   INVOKE ExitProcess, eax
  main ENDP
 END main
+
+;what can it do
+; 
+;	division with no remainder if there is remainder then it will only do first operation
+;	multiplikation
+;	addition
+;	subtraktion
