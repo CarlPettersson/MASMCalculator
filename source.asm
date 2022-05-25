@@ -153,13 +153,11 @@ GoHere:
 			pop esi
 			pop ecx
 	endif2:
-
 	cmp first, 1
 	jne @f
 		mov eax, num
 		mov result, eax
 		jmp endif3
-
 	@@:
 	mov result, eax
 	endif3:
@@ -170,35 +168,29 @@ GoHere:
 	jne @f
 		mov whatSign, '*'
 		jmp endif4
-
 	@@:
 	cmp eax, 45
 	jne @f
 		mov whatSign, '-'
 		jmp endif4
-
 	@@:
 	cmp eax, 43
 	jne @f
 		mov whatSign, '+'
 		jmp endif4
-
 	@@:
 	cmp eax, 47
 	jne @f
 		mov whatsign, '/'
 		jmp endif4
-
 	@@:
 	cmp eax, 94
 	jne endif4
 		mov whatSign, '^'
 	endif4:
 	mov eax, result
-
 	cmp ecx, stringSize
 	jle GoBack
-
 	test eax, eax
 	jl neg1
 	call writeDec
@@ -208,9 +200,7 @@ GoHere:
 	pos1:
 	mov edx, offset newline
 	call writestring
-
 	jmp start
-
 quit:
   INVOKE ExitProcess, eax
  main ENDP
