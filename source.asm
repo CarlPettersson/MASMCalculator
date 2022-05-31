@@ -18,7 +18,7 @@
  .code
  main PROC
  start:
-	xor esi, esia
+	xor esi, esi
 	mov eax, 0
 	mov num, eax
 	mov result, 0
