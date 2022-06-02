@@ -35,7 +35,7 @@
 		cmp eax, 71h				; if input is q quit
 		jz quit						  
 		cmp eax, 30h				; check if number
-		jbe @f
+		jb @f
 		cmp eax, 39h				
 		ja @f
 			sub eax, 30h			; convert to real number from utf-8 encoding
